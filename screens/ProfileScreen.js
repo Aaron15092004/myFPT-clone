@@ -21,6 +21,7 @@ import {
   useFonts,
   Montserrat_600SemiBold,
 } from "@expo-google-fonts/montserrat";
+import { Dimensions } from "react-native";
 
 export default function ProfileScreen() {
   const [fontsLoaded] = useFonts({
@@ -28,6 +29,8 @@ export default function ProfileScreen() {
   });
 
   if (!fontsLoaded) return null;
+
+  const { width: screenWidth } = Dimensions.get("window");
 
   const menuItems = [
     { id: 1, title: "My Profile", icon: <MyProfileIcon size={22} /> },
@@ -43,7 +46,7 @@ export default function ProfileScreen() {
       <ScrollView>
         <View style={styles.profileHeader}>
           <View style={styles.bannerContainer}>
-            <BannerIcon width={410} height={142} />
+            <BannerIcon width={screenWidth} height={142} />
           </View>
           <View style={styles.avatarContainer}>
             <View style={styles.avatar}>
