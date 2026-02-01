@@ -56,11 +56,11 @@ export function Events({ size = 40 }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 32 32">
       <Defs>
-        <LinearGradient id="linear-gradient" x1="1" y1="0" x2="0" y2="1">
+        <LinearGradient id="events-gradient-1" x1="1" y1="0" x2="0" y2="1">
           <Stop offset="0.1" stopColor="#FFB451" />
           <Stop offset="1" stopColor="#FF3C1D" />
         </LinearGradient>
-        <LinearGradient id="linear-gradient-2" x1="1" y1="0" x2="0" y2="0">
+        <LinearGradient id="events-gradient-2" x1="1" y1="0" x2="0" y2="0">
           <Stop offset="0" stopColor="#FFA24B" />
           <Stop offset="1" stopColor="#FFC451" />
         </LinearGradient>
@@ -73,7 +73,7 @@ export function Events({ size = 40 }) {
             d="M334,451.28a10.7,10.7,0,0,1-16.28-13l-16.86-13.46a11.92,11.92,0,0,1-15.28-7.15,12.08,12.08,0,0,1-.71-4.08,10.1,10.1,0,0,1,.1-1.45l-45.7-36.48a8.72,8.72,0,0,1-12.82-10.21l-28.34-22.63,1.75,15h.48a9.85,9.85,0,0,1,1.78,19.47l5,42.66a11.49,11.49,0,0,1,2.58,22.14l10,85.62a13.58,13.58,0,0,1,3.08,26.41l2.91,25,158.23-88Zm2.82,37.13a12.82,12.82,0,1,1,12.82-12.81h0a12.81,12.81,0,0,1-12.82,12.82Z"
           />
           <Path
-            fill="url(#linear-gradient)"
+            fill="url(#events-gradient-1)"
             d="M522.39,179.57L451.63,456.87L276.62,326.83L522.39,179.57z"
           />
           <Path
@@ -139,7 +139,7 @@ export function Events({ size = 40 }) {
             transform="translate(-222.66 217.32) rotate(-29.28)"
           />
           <Path
-            fill="url(#linear-gradient-2)"
+            fill="url(#events-gradient-2)"
             d="M396.33,391.61c0,60.22-15.91,109.02-35.55,109.02s-35.55-48.8-35.55-109.02,15.91-109.02,35.55-109.02S364.33,320,364.33,280Z"
             transform="translate(-167.11 452.1) rotate(-53.56)"
           />

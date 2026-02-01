@@ -7,7 +7,13 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { SearchIcon, GridIcon } from "../components/icon/common";
+import { useState } from "react";
+import {
+  SearchIcon,
+  GridIcon,
+  ListIcon,
+  CloseCircleIcon,
+} from "../components/icon/common";
 import {
   ApproveNow,
   Discipline,
@@ -28,6 +34,16 @@ import { EmployeeInfo } from "../components/icon/wiki";
 import { Game } from "../components/icon/game";
 
 export default function HomeScreen() {
+  const [viewMode, setViewMode] = useState("list");
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filterItems = (items) => {
+    if (!searchQuery.trim()) return items;
+    return items.filter((item) =>
+      item.title.toLowerCase().includes(searchQuery.toLowerCase()),
+    );
+  };
+
   const work = [
     {
       id: 1,
@@ -142,8 +158,62 @@ Colleagues can send you birthday wishes on myFPT.`,
     },
   ];
 
+  const renderListView = (items, isLast) => {
+    return items.map((item, index) => (
+      <View style={styles.menuItemParent} key={item.id}>
+        <TouchableOpacity
+          style={[
+            styles.menuItem,
+            index === items.length - 1 && styles.lastMenuItem,
+          ]}
+        >
+          <View style={styles.iconContainer}>
+            {item.icon || <View style={styles.iconPlaceholder} />}
+          </View>
+          <View style={styles.menuContent}>
+            <Text style={styles.menuTitle}>{item.title}</Text>
+            <Text style={styles.menuSubtitle}>{item.subtitle}</Text>
+          </View>
+        </TouchableOpacity>
+      </View>
+    ));
+  };
+
+  const renderGridView = (items) => {
+    const rows = [];
+    for (let i = 0; i < items.length; i += 4) {
+      rows.push(items.slice(i, i + 4));
+    }
+
+    return (
+      <View style={styles.gridContainer}>
+        {rows.map((row, rowIndex) => (
+          <View key={rowIndex} style={styles.gridRow}>
+            {row.map((item) => (
+              <TouchableOpacity key={item.id} style={styles.gridItem}>
+                <View style={styles.gridIconContainer}>
+                  {item.icon || <View style={styles.iconPlaceholder} />}
+                </View>
+                <Text style={styles.gridTitle} numberOfLines={2}>
+                  {item.title}
+                </Text>
+              </TouchableOpacity>
+            ))}
+            {/* Fill empty spaces if row has less than 4 items */}
+            {row.length < 4 &&
+              Array(4 - row.length)
+                .fill(0)
+                .map((_, index) => (
+                  <View key={`empty-${index}`} style={styles.gridItem} />
+                ))}
+          </View>
+        ))}
+      </View>
+    );
+  };
+
   return (
-    <SafeAreaView edges={['top']} style={styles.container}>
+    <SafeAreaView edges={["top"]} style={styles.container}>
       <View style={styles.headerContainer}>
         <View style={styles.searchContainer}>
           <View style={styles.searchInputWrapper}>
@@ -152,10 +222,24 @@ Colleagues can send you birthday wishes on myFPT.`,
               style={styles.searchInput}
               placeholder="Type feature's name"
               placeholderTextColor="#999"
+              value={searchQuery}
+              onChangeText={setSearchQuery}
             />
+            {searchQuery.length > 0 && (
+              <TouchableOpacity onPress={() => setSearchQuery("")}>
+                <CloseCircleIcon size={18} />
+              </TouchableOpacity>
+            )}
           </View>
-          <TouchableOpacity style={styles.gridIconButton}>
-            <GridIcon size={25} />
+          <TouchableOpacity
+            style={styles.gridIconButton}
+            onPress={() => setViewMode(viewMode === "list" ? "grid" : "list")}
+          >
+            {viewMode === "list" ? (
+              <GridIcon size={25} />
+            ) : (
+              <ListIcon size={25} />
+            )}
           </TouchableOpacity>
         </View>
       </View>
@@ -163,109 +247,50 @@ Colleagues can send you birthday wishes on myFPT.`,
       <ScrollView style={styles.scrollContent}>
         <Text style={styles.pageTitle}>All Apps</Text>
         {/* Work Section */}
-        <Text style={styles.sectionTitle}>WORK</Text>
-        {work.map((item, index) => (
-          <View style={styles.menuItemParent} key={item.id}>
-            <TouchableOpacity
-              style={[
-                styles.menuItem,
-                index === work.length - 1 && styles.lastMenuItem,
-              ]}
-            >
-              <View style={styles.iconContainer}>
-                {item.icon || <View style={styles.iconPlaceholder} />}
-              </View>
-              <View style={styles.menuContent}>
-                <Text style={styles.menuTitle}>{item.title}</Text>
-                <Text style={styles.menuSubtitle}>{item.subtitle}</Text>
-              </View>
-            </TouchableOpacity>
-          </View>
-        ))}
-
+        {filterItems(work).length > 0 && (
+          <>
+            <Text style={styles.sectionTitle}>WORK</Text>
+            {viewMode === "list"
+              ? renderListView(filterItems(work))
+              : renderGridView(filterItems(work))}
+          </>
+        )}
         {/* Utilities Section */}
-        <Text style={styles.sectionTitle}>UTILITIES</Text>
-        {utilities.map((item, index) => (
-          <View style={styles.menuItemParent} key={item.id}>
-            <TouchableOpacity
-              style={[
-                styles.menuItem,
-                index === utilities.length - 1 && styles.lastMenuItem,
-              ]}
-            >
-              <View style={styles.iconContainer}>
-                {item.icon || <View style={styles.iconPlaceholder} />}
-              </View>
-              <View style={styles.menuContent}>
-                <Text style={styles.menuTitle}>{item.title}</Text>
-                <Text style={styles.menuSubtitle}>{item.subtitle}</Text>
-              </View>
-            </TouchableOpacity>
-          </View>
-        ))}
-
+        {filterItems(utilities).length > 0 && (
+          <>
+            <Text style={styles.sectionTitle}>UTILITIES</Text>
+            {viewMode === "list"
+              ? renderListView(filterItems(utilities))
+              : renderGridView(filterItems(utilities))}
+          </>
+        )}
         {/* News Section */}
-        <Text style={styles.sectionTitle}>NEWS</Text>
-        {news.map((item, index) => (
-          <View style={styles.menuItemParent} key={item.id}>
-            <TouchableOpacity
-              style={[
-                styles.menuItem,
-                index === news.length - 1 && styles.lastMenuItem,
-              ]}
-            >
-              <View style={styles.iconContainer}>
-                {item.icon || <View style={styles.iconPlaceholder} />}
-              </View>
-              <View style={styles.menuContent}>
-                <Text style={styles.menuTitle}>{item.title}</Text>
-                <Text style={styles.menuSubtitle}>{item.subtitle}</Text>
-              </View>
-            </TouchableOpacity>
-          </View>
-        ))}
-
+        {filterItems(news).length > 0 && (
+          <>
+            <Text style={styles.sectionTitle}>NEWS</Text>
+            {viewMode === "list"
+              ? renderListView(filterItems(news))
+              : renderGridView(filterItems(news))}
+          </>
+        )}
         {/* Wiki Section */}
-        <Text style={styles.sectionTitle}>WIKI</Text>
-        {wiki.map((item, index) => (
-          <View style={styles.menuItemParent} key={item.id}>
-            <TouchableOpacity
-              style={[
-                styles.menuItem,
-                index === wiki.length - 1 && styles.lastMenuItem,
-              ]}
-            >
-              <View style={styles.iconContainer}>
-                {item.icon || <View style={styles.iconPlaceholder} />}
-              </View>
-              <View style={styles.menuContent}>
-                <Text style={styles.menuTitle}>{item.title}</Text>
-                <Text style={styles.menuSubtitle}>{item.subtitle}</Text>
-              </View>
-            </TouchableOpacity>
-          </View>
-        ))}
-
+        {filterItems(wiki).length > 0 && (
+          <>
+            <Text style={styles.sectionTitle}>WIKI</Text>
+            {viewMode === "list"
+              ? renderListView(filterItems(wiki))
+              : renderGridView(filterItems(wiki))}
+          </>
+        )}
         {/* Game Section */}
-        <Text style={styles.sectionTitle}>GAME</Text>
-        {game.map((item, index) => (
-          <View style={styles.menuItemParent} key={item.id}>
-            <TouchableOpacity
-              style={[
-                styles.menuItem,
-                index === game.length - 1 && styles.lastMenuItem,
-              ]}
-            >
-              <View style={styles.iconContainer}>
-                {item.icon || <View style={styles.iconPlaceholder} />}
-              </View>
-              <View style={styles.menuContent}>
-                <Text style={styles.menuTitle}>{item.title}</Text>
-                <Text style={styles.menuSubtitle}>{item.subtitle}</Text>
-              </View>
-            </TouchableOpacity>
-          </View>
-        ))}
+        {filterItems(game).length > 0 && (
+          <>
+            <Text style={styles.sectionTitle}>GAME</Text>
+            {viewMode === "list"
+              ? renderListView(filterItems(game))
+              : renderGridView(filterItems(game))}
+          </>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
@@ -274,7 +299,7 @@ Colleagues can send you birthday wishes on myFPT.`,
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F5F5F5",
+    backgroundColor: "#FFFFFF",
   },
   headerContainer: {
     backgroundColor: "white",
@@ -304,10 +329,6 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     padding: 6,
   },
-  gridIconText: {
-    fontSize: 20,
-    color: "#666",
-  },
   pageTitle: {
     fontSize: 24,
     fontWeight: "bold",
@@ -318,6 +339,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flex: 1,
+    backgroundColor: "#FFFFFF",
   },
   sectionTitle: {
     fontSize: 12,
@@ -327,11 +349,16 @@ const styles = StyleSheet.create({
     marginBottom: 6,
     fontWeight: "600",
     letterSpacing: 0.5,
+    backgroundColor: "#F5F5F5",
+    paddingTop: 10,
+    paddingBottom: 6,
+    paddingHorizontal: 16,
+    marginLeft: 0,
   },
   menuItem: {
     flexDirection: "row",
     backgroundColor: "white",
-    paddingTop: 14,
+    paddingTop: 11,
     paddingBottom: 20,
     alignItems: "flex-start",
     borderBottomWidth: 1,
@@ -373,5 +400,30 @@ const styles = StyleSheet.create({
     fontSize: 11.5,
     color: "#858585",
     lineHeight: 18,
+  },
+  // Grid styles
+  gridContainer: {
+    backgroundColor: "white",
+  },
+  gridRow: {
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    marginVertical: 24,
+  },
+  gridItem: {
+    width: "25%",
+    alignItems: "center",
+  },
+  gridIconContainer: {
+    width: 50,
+    height: 50,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  gridTitle: {
+    fontSize: 12,
+    fontWeight: "400",
+    textAlign: "center",
+    color: "#333",
   },
 });
